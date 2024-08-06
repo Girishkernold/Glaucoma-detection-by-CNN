@@ -1,0 +1,136 @@
+<!-- templates/patient_page.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glaucoma detection</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='patient_page.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Patient</h1>
+
+        <!-- Patient Details Section -->
+        <div id="patient-details">
+            <h2>Your Details:</h2>
+            <p><strong>Name:</strong> {{ patient_details['name'] }}</p>
+            <p><strong>ID:</strong> {{ patient_details['id'] }}</p>
+            <p><strong>Email:</strong> {{ patient_details['email'] }}</p>
+            <p><strong>Date of Birth:</strong> {{ patient_details['dob'] }}</p>
+            <!-- Add more details as needed -->
+        </div>
+
+        <!-- Image Upload and Prediction Form -->
+        <form id="predict-form" enctype="multipart/form-data">
+            <label for="file">Upload Fundus Image:</label>
+            <div>
+                <input type="file" name="file" accept=".png, .jpg, .jpeg" id="file-input" required>
+                <span id="file-path">No file selected</span>
+            </div>
+            <br>
+            <button type="submit" id="predict-button">Predict</button>
+        </form>
+
+        <div id="result-container">
+            {% if result %}
+                <h2>Result: {{ result }}</h2>
+
+                <!-- Save details to the database -->
+                {% set image_path = '/static/uploads/' + uploaded_image %}
+                {% set patient_id = patient_details['id'] %}
+                {% set result_details = {'patient_id': patient_id, 'image_path': image_path, 'result': result} %}
+                {% set _ = results_table.insert_one(result_details) %}
+            {% endif %}
+        </div>
+
+        <div id="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Calculating...</p>
+        </div>
+
+        {% if uploaded_image %}
+            <div>
+                <h3>Uploaded Image:</h3>
+                <img src="{{ url_for('static', filename=uploaded_image) }}" alt="Uploaded Image" width="200">
+            </div>
+        {% endif %}
+
+        <div id="file-error" style="display: none; color: #ff0000;">
+            You haven't uploaded a png or jpg or jpeg <strong>Fundus</strong> image file/files.
+        </div>
+
+        <div>
+            <h3>Sample Images:</h3>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <img src="{{ url_for('static', filename='normal.png') }}" alt="Normal Fundus Image" width="200">
+                    <span class="image-description">Normal Fundus Image</span>
+                </div>
+                <div>
+                    <img src="{{ url_for('static', filename='gluacoma.png') }}" alt="Glaucoma Fundus Image" width="200">
+                    <span class="image-description">Glaucoma Fundus Image</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Update your script block -->
+<script>
+    $(document).ready(function () {
+        const predictForm = $('#predict-form');
+        const fileInput = $('#file-input');
+        const filePath = $('#file-path');
+        const predictButton = $('#predict-button');
+        const loadingIndicator = $('#loading-indicator');
+        const resultContainer = $('#result-container');
+        const fileError = $('#file-error');
+
+        fileInput.on('change', function () {
+            filePath.text(fileInput[0].files.length > 0 ? fileInput[0].files[0].name : 'No file selected');
+        });
+
+        predictForm.on('submit', function (event) {
+            event.preventDefault();
+
+            if (fileInput[0].files.length === 0) {
+                fileError.show();
+            } else {
+                fileError.hide();
+                loadingIndicator.show();
+
+                // Use FormData to handle file uploads
+                const formData = new FormData(this);
+
+                // Use AJAX to submit the form asynchronously
+                $.ajax({
+                    type: 'POST',
+                    url: '/predict',  // Change this to the actual endpoint
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+    loadingIndicator.hide();
+    resultContainer.html('<h2>Result: ' + response.result + '</h2>');
+
+    // Additional code to display the uploaded image if needed
+    const uploadedImage = response.uploaded_image;
+    if (uploadedImage) {
+        const imagePath = '/static/uploads/' + uploadedImage;
+        resultContainer.append('<div><h3>Uploaded Image:</h3><img src="' + imagePath + '" alt="Uploaded Image" width="200"></div>');
+    }
+},
+                    error: function () {
+                        loadingIndicator.hide();
+                        alert('An error occurred while processing the prediction.');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

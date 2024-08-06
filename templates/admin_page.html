@@ -1,0 +1,101 @@
+<!-- templates/admin_page.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='admin_page.css') }}">
+    <!-- Include Chart.js library -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <!-- Add a container for the pie chart -->
+        <div class="chart-container">
+            <!-- Add a canvas for the pie chart -->
+            <canvas id="glaucomaChart" width="200" height="200"></canvas>
+        </div>
+
+        <!-- Display Patient Results Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Image Path</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in all_results %}
+                        <tr>
+                            <td>{{ result['patient_id'] }}</td>
+                            <td><a href="#" onclick="openImageModal({{ result['image_path']|tojson|safe }}')">View Image</a></td>
+
+                            <td>{{ result['result'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Image Modal -->
+        <div id="imageModal" class="modal">
+            <span class="close" onclick="closeImageModal()">&times;</span>
+            <img id="modalImage" class="modal-content">
+        </div>
+
+        <script>
+            // Extract glaucoma and non-glaucoma counts from the data
+            var glaucomaCount = {{ all_results | selectattr('result', 'equalto', 'Positive') | list | length }};
+            var nonGlaucomaCount = {{ all_results | selectattr('result', 'equalto', 'Negative') | list | length }};
+        
+            // Get the canvas element
+            var ctx = document.getElementById('glaucomaChart').getContext('2d');
+        
+            // Create a pie chart
+            var glaucomaChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Glaucoma', 'Non-Glaucoma'],
+                    datasets: [{
+                        data: [glaucomaCount, nonGlaucomaCount],
+                        backgroundColor: ['#FF6384', '#36A2EB'],
+                        hoverBackgroundColor: ['#FF6384', '#36A2EB']
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: false
+                }
+            });
+        
+            // Function to open image modal
+            function openImageModal(imagePath) {
+                var modal = document.getElementById('imageModal');
+                var modalImage = document.getElementById('modalImage');
+        
+                console.log('Image Path:', imagePath);
+        
+                modal.style.display = 'flex';
+                modalImage.src = "{{ url_for('static', filename='') }}" + imagePath;
+
+        
+                console.log('Modal Image Source:', modalImage.src);
+            }
+        
+            // Function to close image modal
+            function closeImageModal() {
+                var modal = document.getElementById('imageModal');
+                modal.style.display = 'none';
+            }
+        </script>
+    </div>
+</body>
+</html>

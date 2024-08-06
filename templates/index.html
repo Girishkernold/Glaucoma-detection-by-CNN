@@ -1,0 +1,36 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glaucoma Predictor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1> Glaucoma detection by CNN</h1>
+            <h3>Welcome to the Glaucoma Predictor web application.</h3>
+            <h4>Sign in</h4>
+            <form action="{{ url_for('login') }}" method="post">
+                <label for="username">Username:</label>
+                <input type="text" name="username" required>
+
+                <label for="password">Password:</label>
+                <input type="password" name="password" required>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <!-- Link to the registration page -->
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+
+            {% if error %}
+                <p id="login-error">{{ error }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
