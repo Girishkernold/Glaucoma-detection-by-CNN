@@ -1,0 +1,94 @@
+/* static/patient_page.css */
+
+body {
+    background-color: #1a1a1a; /* Dark background color */
+    color: #ffffff; /* Text color */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+}
+
+.container {
+    background-color: #333333; /* Darker color for the container */
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+h1, h2, h3 {
+    color: #33aaff; /* Accent color */
+}
+
+p {
+    margin-top: 20px;
+    color: #cccccc; /* Light text color */
+}
+
+form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+input,
+select {
+    margin-top: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #33aaff; /* Bright color */
+    color: #ffffff; /* Text color */
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #33aaff;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#patient-details {
+    margin-top: 30px;
+}
+
+#patient-details h2 {
+    color: #33aaff;
+}
+
+#patient-details p {
+    color: #cccccc;
+    margin: 5px 0;
+}
+
+#file-error {
+    display: none;
+    color: #ff0000;
+    margin-top: 20px;
+}
+
+h3 {
+    margin-top: 30px;
+    color: #ffffff;
+}
+
+img {
+    border: 2px solid #cccccc;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.image-description {
+    color: #33aaff;
+    margin-top: 5px;
+}
